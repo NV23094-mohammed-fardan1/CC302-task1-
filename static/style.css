@@ -1,0 +1,21 @@
+body {
+    font-family: Arial;
+    background: #f4f4f4;
+}
+
+.container {
+    width: 400px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    margin-top: 50px;
+    border-radius: 10px;
+}
+
+li {
+    margin: 10px 0;
+}
+
+s {
+    color: gray;
+}
