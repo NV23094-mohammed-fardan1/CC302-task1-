@@ -2,18 +2,24 @@
 
 {% block content %}
 
-<form method="POST" class="d-flex gap-2">
+<form method="POST" class="mb-3">
 
-    <input type="text" 
-           name="task" 
-           value="{{ task.task }}" 
-           class="form-control"
+    <input type="text"
+           name="task"
+           value="{{ task.task }}"
+           class="form-control mb-3"
            required>
 
-    <button class="btn btn-primary">Update</button>
+    <div class="d-grid gap-2">
+        <button class="btn btn-primary">
+            Update Task
+        </button>
+
+        <a href="/" class="btn btn-light">
+            Back
+        </a>
+    </div>
 
 </form>
-
-<a href="/" class="btn btn-secondary mt-3">Back</a>
 
 {% endblock %}

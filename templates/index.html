@@ -1,46 +1,134 @@
 {% extends 'base.html' %}
-
 {% block content %}
 
-<form action="/add" method="POST" class="d-flex gap-2 mb-4">
-    <input type="text" name="task" class="form-control" placeholder="Enter new task..." required>
-    <button class="btn btn-primary">Add</button>
-</form>
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
 
+<div>
+<h4 class="fw-bold">Task Dashboard</h4>
+<small class="text-muted">Manage and track your productivity</small>
+</div>
+
+</div>
+
+<!-- Stats Row -->
+<div class="row mb-4">
+
+<div class="col-md-4">
+<div class="card p-3 text-center shadow-sm">
+<h6>Total Tasks</h6>
+<h3 class="fw-bold">{{ total }}</h3>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card p-3 text-center shadow-sm">
+<h6>Completed</h6>
+<h3 class="fw-bold text-success">{{ completed }}</h3>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card p-3 text-center shadow-sm">
+<h6>Progress</h6>
+<div class="progress mt-2">
+<div class="progress-bar bg-info"
+style="width: {{ (completed/total*100) if total else 0 }}%">
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+<!-- Add Task -->
+<div class="card p-3 shadow-sm mb-4">
+<form action="/add" method="POST" class="row g-2">
+
+<div class="col-md-10">
+<input type="text" name="task" class="form-control" placeholder="Enter new task..." required>
+</div>
+
+<div class="col-md-2 d-grid">
+<button class="btn btn-primary">
+<i class="bi bi-plus-circle"></i> Add
+</button>
+</div>
+
+</form>
+</div>
+
+<!-- Task List -->
 <ul class="list-group">
 
-    {% for task in tasks %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
+{% for task in tasks %}
 
-            <div>
-                {% if task.completed %}
-                    <span class="text-decoration-line-through text-muted">
-                        {{ task.task }}
-                    </span>
-                {% else %}
-                    {{ task.task }}
-                {% endif %}
-            </div>
+<li class="list-group-item task-item d-flex justify-content-between align-items-center">
 
-            <div class="btn-group">
+<div>
 
-                <a href="/complete/{{ task.id }}" class="btn btn-success btn-sm">
-                    ✔
-                </a>
+<span class="fw-medium {% if task.completed %}text-decoration-line-through text-muted{% endif %}">
+{{ task.task }}
+</span>
 
-                <a href="/edit/{{ task.id }}" class="btn btn-warning btn-sm">
-                    Edit
-                </a>
+</div>
 
-                <a href="/delete/{{ task.id }}" class="btn btn-danger btn-sm">
-                    Delete
-                </a>
+<div class="btn-group">
 
-            </div>
+<a href="/complete/{{ task.id }}" class="btn btn-success btn-sm">
+<i class="bi bi-check"></i>
+</a>
 
-        </li>
-    {% endfor %}
+<button class="btn btn-warning btn-sm"
+data-bs-toggle="modal"
+data-bs-target="#editModal{{ task.id }}">
+<i class="bi bi-pencil"></i>
+</button>
+
+<a href="/delete/{{ task.id }}" class="btn btn-danger btn-sm">
+<i class="bi bi-trash"></i>
+</a>
+
+</div>
+
+</li>
+
+{% endfor %}
 
 </ul>
+
+<!-- Edit Modals -->
+{% for task in tasks %}
+
+<div class="modal fade" id="editModal{{ task.id }}">
+<div class="modal-dialog">
+<div class="modal-content">
+
+<form action="/edit/{{ task.id }}" method="POST">
+
+<div class="modal-header">
+<h5 class="modal-title">Edit Task</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+<input type="text"
+       name="task"
+       value="{{ task.task }}"
+       class="form-control"
+       required>
+</div>
+
+<div class="modal-footer">
+<button class="btn btn-primary">Save Changes</button>
+</div>
+
+</form>
+
+</div>
+</div>
+</div>
+
+{% endfor %}
 
 {% endblock %}
