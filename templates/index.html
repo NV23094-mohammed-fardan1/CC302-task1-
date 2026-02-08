@@ -2,27 +2,45 @@
 
 {% block content %}
 
-<form action="/add" method="POST">
-    <input type="text" name="task" placeholder="Enter task" required>
-    <button type="submit">Add</button>
+<form action="/add" method="POST" class="d-flex gap-2 mb-4">
+    <input type="text" name="task" class="form-control" placeholder="Enter new task..." required>
+    <button class="btn btn-primary">Add</button>
 </form>
 
-<ul>
+<ul class="list-group">
+
     {% for task in tasks %}
-        <li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
 
-            {% if task.completed %}
-                <s>{{ task.task }}</s>
-            {% else %}
-                {{ task.task }}
-            {% endif %}
+            <div>
+                {% if task.completed %}
+                    <span class="text-decoration-line-through text-muted">
+                        {{ task.task }}
+                    </span>
+                {% else %}
+                    {{ task.task }}
+                {% endif %}
+            </div>
 
-            <a href="/complete/{{ task.id }}">✔</a>
-            <a href="/edit/{{ task.id }}">Edit</a>
-            <a href="/delete/{{ task.id }}">Delete</a>
+            <div class="btn-group">
+
+                <a href="/complete/{{ task.id }}" class="btn btn-success btn-sm">
+                    ✔
+                </a>
+
+                <a href="/edit/{{ task.id }}" class="btn btn-warning btn-sm">
+                    Edit
+                </a>
+
+                <a href="/delete/{{ task.id }}" class="btn btn-danger btn-sm">
+                    Delete
+                </a>
+
+            </div>
 
         </li>
     {% endfor %}
+
 </ul>
 
 {% endblock %}
