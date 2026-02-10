@@ -1,24 +1,28 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block content %}
 
-<form method="POST" class="mb-3">
+<h2>Edit Task</h2>
 
-    <input type="text"
-           name="task"
-           value="{{ task.task }}"
-           class="form-control mb-3"
-           required>
+<form method="POST">
 
-    <div class="d-grid gap-2">
-        <button class="btn btn-primary">
-            Update Task
-        </button>
+<input name="task" class="form-control mb-2" value="{{task.task}}">
 
-        <a href="/" class="btn btn-light">
-            Back
-        </a>
-    </div>
+<select name="category" class="form-select mb-2">
+<option {{'selected' if task.category=='Work'}}>Work</option>
+<option {{'selected' if task.category=='Personal'}}>Personal</option>
+<option {{'selected' if task.category=='Study'}}>Study</option>
+</select>
+
+<select name="priority" class="form-select mb-2">
+<option {{'selected' if task.priority=='Low'}}>Low</option>
+<option {{'selected' if task.priority=='Medium'}}>Medium</option>
+<option {{'selected' if task.priority=='High'}}>High</option>
+</select>
+
+<input type="date" name="due_date" class="form-control mb-2"
+value="{{task.due_date}}">
+
+<button class="btn btn-primary">Save</button>
 
 </form>
 

@@ -1,134 +1,110 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block content %}
 
-<!-- Header -->
-<div class="d-flex justify-content-between align-items-center mb-4">
+<h2 class="mb-4">Dashboard</h2>
 
-<div>
-<h4 class="fw-bold">Task Dashboard</h4>
-<small class="text-muted">Manage and track your productivity</small>
+<div class="row align-items-center mb-4">
+
+<div class="col-md-3 text-center">
+<canvas id="completionChart" width="180" height="180"></canvas>
+<p class="mt-2">Completion</p>
 </div>
 
-</div>
-
-<!-- Stats Row -->
-<div class="row mb-4">
-
-<div class="col-md-4">
-<div class="card p-3 text-center shadow-sm">
+<div class="col-md-3 text-center">
 <h6>Total Tasks</h6>
-<h3 class="fw-bold">{{ total }}</h3>
-</div>
+<h3>{{total}}</h3>
 </div>
 
-<div class="col-md-4">
-<div class="card p-3 text-center shadow-sm">
+<div class="col-md-3 text-center">
 <h6>Completed</h6>
-<h3 class="fw-bold text-success">{{ completed }}</h3>
+<h3>{{completed}}</h3>
 </div>
+
+<div class="col-md-3 text-center">
+<h6>Pending</h6>
+<h3>{{pending}}</h3>
 </div>
+
+</div>
+
+<hr>
+
+<form action="/add" method="POST" class="row g-2 mb-4">
 
 <div class="col-md-4">
-<div class="card p-3 text-center shadow-sm">
-<h6>Progress</h6>
-<div class="progress mt-2">
-<div class="progress-bar bg-info"
-style="width: {{ (completed/total*100) if total else 0 }}%">
-</div>
-</div>
-</div>
+<input name="task" class="form-control" placeholder="Task" required>
 </div>
 
+<div class="col-md-2">
+<select name="category" class="form-select">
+<option>Work</option>
+<option>Personal</option>
+<option>Study</option>
+</select>
 </div>
 
-<!-- Add Task -->
-<div class="card p-3 shadow-sm mb-4">
-<form action="/add" method="POST" class="row g-2">
-
-<div class="col-md-10">
-<input type="text" name="task" class="form-control" placeholder="Enter new task..." required>
+<div class="col-md-2">
+<select name="priority" class="form-select">
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+</select>
 </div>
 
-<div class="col-md-2 d-grid">
-<button class="btn btn-primary">
-<i class="bi bi-plus-circle"></i> Add
-</button>
+<div class="col-md-2">
+<input type="date" name="due_date" class="form-control">
+</div>
+
+<div class="col-md-2">
+<button class="btn btn-primary w-100">Add</button>
 </div>
 
 </form>
-</div>
 
-<!-- Task List -->
-<ul class="list-group">
+{% for task in todos %}
 
-{% for task in tasks %}
-
-<li class="list-group-item task-item d-flex justify-content-between align-items-center">
+<div class="card mb-2 task-card">
+<div class="card-body d-flex justify-content-between align-items-center">
 
 <div>
+<h5 class="{% if task.completed %}completed{% endif %}">
+{{task.task}}
+</h5>
 
-<span class="fw-medium {% if task.completed %}text-decoration-line-through text-muted{% endif %}">
-{{ task.task }}
-</span>
-
+<small class="text-muted">
+{{task.category}} | {{task.priority}}
+{% if task.due_date %}
+ | Due: {{task.due_date}}
+{% endif %}
+</small>
 </div>
 
-<div class="btn-group">
-
-<a href="/complete/{{ task.id }}" class="btn btn-success btn-sm">
-<i class="bi bi-check"></i>
-</a>
-
-<button class="btn btn-warning btn-sm"
-data-bs-toggle="modal"
-data-bs-target="#editModal{{ task.id }}">
-<i class="bi bi-pencil"></i>
-</button>
-
-<a href="/delete/{{ task.id }}" class="btn btn-danger btn-sm">
-<i class="bi bi-trash"></i>
-</a>
-
+<div>
+<a href="/complete/{{task.id}}" class="btn btn-success btn-sm">✔</a>
+<a href="/edit/{{task.id}}" class="btn btn-warning btn-sm">Edit</a>
+<a href="/delete/{{task.id}}" class="btn btn-danger btn-sm">Delete</a>
 </div>
 
-</li>
-
-{% endfor %}
-
-</ul>
-
-<!-- Edit Modals -->
-{% for task in tasks %}
-
-<div class="modal fade" id="editModal{{ task.id }}">
-<div class="modal-dialog">
-<div class="modal-content">
-
-<form action="/edit/{{ task.id }}" method="POST">
-
-<div class="modal-header">
-<h5 class="modal-title">Edit Task</h5>
-<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-</div>
-
-<div class="modal-body">
-<input type="text"
-       name="task"
-       value="{{ task.task }}"
-       class="form-control"
-       required>
-</div>
-
-<div class="modal-footer">
-<button class="btn btn-primary">Save Changes</button>
-</div>
-
-</form>
-
-</div>
 </div>
 </div>
 
 {% endfor %}
+
+
+<script>
+new Chart(document.getElementById('completionChart'),{
+type:'doughnut',
+data:{
+labels:['Completed','Remaining'],
+datasets:[{
+data:[{{completed}},{{pending}}],
+}]
+},
+options:{
+responsive:false,
+cutout:'70%'
+}
+});
+</script>
 
 {% endblock %}

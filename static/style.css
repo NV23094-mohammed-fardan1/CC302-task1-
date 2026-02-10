@@ -1,21 +1,111 @@
 body {
-    font-family: Arial;
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.app {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 220px;
+    background: white;
+    border-right: 1px solid #eee;
+    padding: 20px;
+}
+
+.sidebar a {
+    display: block;
+    padding: 10px;
+    margin: 8px 0;
+    color: #333;
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+.sidebar a:hover {
     background: #f4f4f4;
 }
 
-.container {
-    width: 400px;
-    margin: auto;
+/* Content */
+.main-content {
+    flex: 1;
+    background: #f6f8fb;
+    padding: 40px;
+}
+
+/* Circles */
+.stats-container {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background:
+    conic-gradient(var(--color) calc(var(--percent) * 1%), #eee 0);
+    position: relative;
+}
+
+.circle span {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.circle p {
+    position: absolute;
+    bottom: -30px;
+}
+
+.blue { --color: #007bff; }
+.green { --color: #28a745; }
+.orange { --color: #ffc107; }
+.red { --color: #dc3545; }
+
+/* Task Cards */
+.task-card {
     background: white;
     padding: 20px;
-    margin-top: 50px;
+    margin-bottom: 15px;
     border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
 }
 
-li {
-    margin: 10px 0;
-}
-
-s {
+.completed {
+    text-decoration: line-through;
     color: gray;
+}
+
+/* Floating Form */
+.floating-form {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.floating-form input {
+    display: block;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.floating-form button {
+    width: 100%;
+    background: #007bff;
+    border: none;
+    color: white;
+    padding: 8px;
+    border-radius: 6px;
 }
