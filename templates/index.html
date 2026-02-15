@@ -3,13 +3,26 @@
 {% block title %}Dashboard - Task Manager Pro{% endblock %}
 
 {% block content %}
-<!-- Page Header -->
 <div class="page-header">
-    <h1><i class="bi bi-grid-fill"></i> Dashboard</h1>
-    <p>Welcome back! Here's your task overview</p>
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1><i class="bi bi-grid-fill"></i> Dashboard</h1>
+            <p>Welcome back! Here's your task overview</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+            <button onclick="exportTasks('json')" class="btn btn-sm" style="background: var(--info-color); color: white;">
+                <i class="bi bi-download"></i> JSON
+            </button>
+            <button onclick="exportTasks('csv')" class="btn btn-sm" style="background: var(--success-color); color: white;">
+                <i class="bi bi-file-earmark-spreadsheet"></i> CSV
+            </button>
+            <button onclick="showKeyboardShortcutsModal()" class="btn btn-sm" style="background: var(--secondary-color); color: white;">
+                <i class="bi bi-keyboard"></i>
+            </button>
+        </div>
+    </div>
 </div>
 
-<!-- Statistics Cards -->
 <div class="stats-grid">
     <div class="stat-card">
         <div class="stat-card-header">
@@ -64,7 +77,6 @@
     </div>
 </div>
 
-<!-- Priority & Analytics -->
 <div class="row mb-4">
     <div class="col-md-6 mb-3">
         <div class="chart-container">
@@ -85,7 +97,6 @@
     </div>
 </div>
 
-<!-- Add Task Form -->
 <div class="chart-container mb-4">
     <div class="chart-header">
         <h3 class="chart-title"><i class="bi bi-plus-circle-fill"></i> Add New Task</h3>
@@ -144,7 +155,6 @@
     </form>
 </div>
 
-<!-- Filters -->
 <div class="filters-container">
     <form method="GET" action="{{ url_for('index') }}">
         <div class="filters-row">
@@ -188,14 +198,13 @@
             <button type="submit" class="btn btn-primary btn-sm">
                 <i class="bi bi-funnel-fill"></i> Apply Filters
             </button>
-            <a href="{{ url_for('index') }}" class="btn btn-secondary btn-sm" style="background: var(--text-secondary);">
+            <a href="{{ url_for('index') }}" class="btn btn-secondary btn-sm">
                 <i class="bi bi-x-circle"></i> Clear Filters
             </a>
         </div>
     </form>
 </div>
 
-<!-- Tasks List -->
 <div class="chart-header mb-3">
     <h3 class="chart-title"><i class="bi bi-list-ul"></i> Your Tasks ({{ todos|length }})</h3>
 </div>
@@ -222,8 +231,7 @@
                     </span>
                     
                     {% if task.due_date %}
-                        {% set today = None %}
-                        {% set is_overdue = task.due_date < today and not task.completed %}
+                        {% set is_overdue = task.due_date < datetime.now().date() and not task.completed %}
                         <span class="task-badge {{ 'badge-overdue' if is_overdue else 'badge-due' }}">
                             <i class="bi bi-calendar-event"></i> 
                             {% if is_overdue %}
@@ -276,11 +284,43 @@
     </div>
 {% endif %}
 
+<div class="modal fade" id="keyboardShortcutsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none;">
+            <div class="modal-header" style="border-bottom: 1px solid var(--border-color);">
+                <h5 class="modal-title"><i class="bi bi-keyboard"></i> Keyboard Shortcuts</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div style="display: flex; justify-content: space-between; padding: 0.75rem; background: var(--light-bg); border-radius: 8px;">
+                            <span><kbd>Ctrl</kbd> + <kbd>K</kbd></span>
+                            <span>Focus Search</span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div style="display: flex; justify-content: space-between; padding: 0.75rem; background: var(--light-bg); border-radius: 8px;">
+                            <span><kbd>Ctrl</kbd> + <kbd>N</kbd></span>
+                            <span>New Task</span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div style="display: flex; justify-content: space-between; padding: 0.75rem; background: var(--light-bg); border-radius: 8px;">
+                            <span><kbd>ESC</kbd></span>
+                            <span>Clear Filters</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Priority Distribution Chart
     const priorityCtx = document.getElementById('priorityChart').getContext('2d');
     new Chart(priorityCtx, {
         type: 'doughnut',
@@ -315,7 +355,6 @@
         }
     });
     
-    // Productivity Chart
     const productivityCtx = document.getElementById('productivityChart').getContext('2d');
     new Chart(productivityCtx, {
         type: 'line',
@@ -373,7 +412,6 @@
         }
     });
     
-    // Set today's date as minimum for due date picker
     const dueDateInput = document.getElementById('due_date');
     const today = new Date().toISOString().split('T')[0];
     dueDateInput.setAttribute('min', today);

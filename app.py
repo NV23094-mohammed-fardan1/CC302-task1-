@@ -22,7 +22,7 @@ class Todo(db.Model):
     due_date = db.Column(db.Date, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     completed_at = db.Column(db.DateTime, nullable=True)
-    tags = db.Column(db.String(200), nullable=True)  # comma-separated tags
+    tags = db.Column(db.String(200), nullable=True)
 
 
 with app.app_context():
@@ -31,47 +31,39 @@ with app.app_context():
 
 # ------------------ HELPER FUNCTIONS ------------------
 def get_task_stats():
-    """Calculate comprehensive task statistics"""
     todos = Todo.query.all()
     
     total = len(todos)
     completed = len([t for t in todos if t.completed])
     pending = total - completed
     
-    # Overdue tasks
     overdue = len([
         t for t in todos
         if t.due_date and t.due_date < date.today() and not t.completed
     ])
     
-    # Due today
     due_today = len([
         t for t in todos
         if t.due_date and t.due_date == date.today() and not t.completed
     ])
     
-    # Due this week
     week_end = date.today() + timedelta(days=7)
     due_this_week = len([
         t for t in todos
         if t.due_date and date.today() <= t.due_date <= week_end and not t.completed
     ])
     
-    # Priority breakdown
     high_priority = len([t for t in todos if t.priority == "High" and not t.completed])
     medium_priority = len([t for t in todos if t.priority == "Medium" and not t.completed])
     low_priority = len([t for t in todos if t.priority == "Low" and not t.completed])
     
-    # Category breakdown
     category_stats = db.session.query(
         Todo.category, 
         func.count(Todo.id)
     ).filter(Todo.completed == False).group_by(Todo.category).all()
     
-    # Completion rate
     completion_rate = int((completed / total) * 100) if total > 0 else 0
     
-    # Recent completions (last 7 days)
     week_ago = datetime.utcnow() - timedelta(days=7)
     recent_completions = Todo.query.filter(
         Todo.completed == True,
@@ -95,7 +87,6 @@ def get_task_stats():
 
 
 def get_productivity_data():
-    """Get productivity data for the last 7 days"""
     days = []
     completed_counts = []
     
@@ -120,16 +111,13 @@ def get_productivity_data():
 
 @app.route("/")
 def index():
-    # Get filter parameters
     filter_category = request.args.get('category', 'all')
     filter_priority = request.args.get('priority', 'all')
     filter_status = request.args.get('status', 'all')
     search_query = request.args.get('search', '')
     
-    # Base query
     query = Todo.query
     
-    # Apply filters
     if filter_category != 'all':
         query = query.filter_by(category=filter_category)
     
@@ -149,16 +137,13 @@ def index():
     if search_query:
         query = query.filter(Todo.task.contains(search_query))
     
-    # Sort by priority and due date
     priority_order = {'High': 1, 'Medium': 2, 'Low': 3}
     todos = query.order_by(Todo.completed, Todo.due_date).all()
     todos.sort(key=lambda x: (x.completed, priority_order.get(x.priority, 4), x.due_date or date.max))
     
-    # Get statistics
     stats = get_task_stats()
     productivity = get_productivity_data()
     
-    # Get unique categories for filter
     categories = db.session.query(Todo.category).distinct().all()
     categories = [c[0] for c in categories]
     
@@ -173,7 +158,8 @@ def index():
             'priority': filter_priority,
             'status': filter_status,
             'search': search_query
-        }
+        },
+        datetime=datetime
     )
 
 
@@ -237,12 +223,11 @@ def edit(id):
         db.session.commit()
         return redirect(url_for('index'))
 
-    return render_template("edit.html", task=task)
+    return render_template("edit.html", task=task, stats=get_task_stats())
 
 
 @app.route("/api/stats")
 def api_stats():
-    """API endpoint for real-time statistics"""
     stats = get_task_stats()
     productivity = get_productivity_data()
     return jsonify({
