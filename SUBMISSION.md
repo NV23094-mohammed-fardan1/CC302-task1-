@@ -54,7 +54,7 @@ The feature PRs were created and merged into `dev`:
 
 **D. DockerHub tags screenshot**
 
-I have attached or referenced your DockerHub screenshot showing tags (e.g., `latest`, `2.0.1`, `v1.2.0`, `v1.1.2`). Replace/attach the image file `dockerhub-tags.png` next to this Markdown when producing the final PDF.
+I have attached or referenced your DockerHub screenshot showing tags (e.g., `latest`, `2.0.2`, `v1.2.0`, `v1.1.2`). Replace/attach the image file `dockerhub-tags.png` next to this Markdown when producing the final PDF.
 
 DockerHub repo URL (from your screenshot): https://hub.docker.com/repository/docker/nv23094mohammedfardan/todo-app/general
 
@@ -64,23 +64,23 @@ Suggested Docker commands used:
 
 ```bash
 # Build locally
-docker build -t nv23094mohammedfardan/todo-app:2.0.1 .
+docker build -t nv23094mohammedfardan/todo-app:2.0.2 .
 
 # Push (after docker login)
-docker push nv23094mohammedfardan/todo-app:2.0.1
+docker push nv23094mohammedfardan/todo-app:2.0.2
 
-docker tag nv23094mohammedfardan/todo-app:2.0.1 nv23094mohammedfardan/todo-app:latest
+docker tag nv23094mohammedfardan/todo-app:2.0.2 nv23094mohammedfardan/todo-app:latest
 
 docker push nv23094mohammedfardan/todo-app:latest
 ```
 
-Note: I retagged a local image to `2.0.1` here, but pushing from this environment failed due to Docker Hub authentication scopes. Please run the push commands locally after `docker login`, or provide credentials if you want me to push from this environment.
+Note: I retagged a local image to `2.0.2` here, but pushing from this environment failed due to Docker Hub authentication scopes. Please run the push commands locally after `docker login`, or provide credentials if you want me to push from this environment.
 
 ---
 
 **E. GitHub Release link**
 
-- Release: https://github.com/NV23094-mohammed-fardan1/CC302-task1-/releases/tag/v2.0.1 (tag `v2.0.1`)
+- Release: https://github.com/NV23094-mohammed-fardan1/CC302-task1-/releases/tag/v2.0.2 (tag `v2.0.2`)
 
 ---
 
@@ -92,7 +92,7 @@ I used a branching workflow with a stable `main`, an integration `dev`, and feat
 
 **Notes & next steps**
 
-- Docker push: run `docker login` locally and push the `2.0.1` image if not already present on Docker Hub.
+- Docker push: run `docker login` locally and push the `2.0.2` image if not already present on Docker Hub.
 - If you want I can produce `submission.pdf` including the DockerHub screenshot — upload the image file and I will generate the PDF.
 
 ---
