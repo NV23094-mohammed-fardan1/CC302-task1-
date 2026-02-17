@@ -71,12 +71,12 @@ Suggested Docker commands used:
 
 ```bash
 # Build locally
-docker build -t nv23094mohammedfardan/todo-app:0.1.0 .
+docker build -t nv23094mohammedfardan/todo-app:2.0.1 .
 
 # Push (after docker login)
-docker push nv23094mohammedfardan/todo-app:0.1.0
+docker push nv23094mohammedfardan/todo-app:2.0.1
 
-docker tag nv23094mohammedfardan/todo-app:0.1.0 nv23094mohammedfardan/todo-app:latest
+docker tag nv23094mohammedfardan/todo-app:2.0.1 nv23094mohammedfardan/todo-app:latest
 
 docker push nv23094mohammedfardan/todo-app:latest
 ```
