@@ -1,29 +1,122 @@
 {% extends "base.html" %}
+
+{% block title %}Edit Task - Task Manager Pro{% endblock %}
+
 {% block content %}
+<div class="page-header">
+    <h1><i class="bi bi-pencil-square"></i> Edit Task</h1>
+    <p>Update your task details</p>
+</div>
 
-<h2>Edit Task</h2>
+<div class="chart-container" style="max-width: 800px; margin: 0 auto;">
+    <form action="{{ url_for('edit', id=task.id) }}" method="POST">
+        <div class="row g-4">
+            <div class="col-12">
+                <label class="form-label" for="task">
+                    <i class="bi bi-card-text"></i> Task Title *
+                </label>
+                <input type="text" name="task" id="task" class="form-control" value="{{ task.task }}" required>
+            </div>
+            
+            <div class="col-12">
+                <label class="form-label" for="description">
+                    <i class="bi bi-card-list"></i> Description
+                </label>
+                <textarea name="description" id="description" class="form-control" rows="4" placeholder="Add task details (optional)">{{ task.description or '' }}</textarea>
+            </div>
+            
+            <div class="col-md-6">
+                <label class="form-label" for="category">
+                    <i class="bi bi-folder-fill"></i> Category *
+                </label>
+                <select name="category" id="category" class="form-select" required>
+                    <option value="Work" {{ 'selected' if task.category == 'Work' }}>Work</option>
+                    <option value="Personal" {{ 'selected' if task.category == 'Personal' }}>Personal</option>
+                    <option value="Study" {{ 'selected' if task.category == 'Study' }}>Study</option>
+                    <option value="Health" {{ 'selected' if task.category == 'Health' }}>Health</option>
+                    <option value="Finance" {{ 'selected' if task.category == 'Finance' }}>Finance</option>
+                    <option value="Shopping" {{ 'selected' if task.category == 'Shopping' }}>Shopping</option>
+                    <option value="Other" {{ 'selected' if task.category == 'Other' }}>Other</option>
+                </select>
+            </div>
+            
+            <div class="col-md-6">
+                <label class="form-label" for="priority">
+                    <i class="bi bi-flag-fill"></i> Priority *
+                </label>
+                <select name="priority" id="priority" class="form-select" required>
+                    <option value="Low" {{ 'selected' if task.priority == 'Low' }}>Low</option>
+                    <option value="Medium" {{ 'selected' if task.priority == 'Medium' }}>Medium</option>
+                    <option value="High" {{ 'selected' if task.priority == 'High' }}>High</option>
+                </select>
+            </div>
+            
+            <div class="col-md-6">
+                <label class="form-label" for="due_date">
+                    <i class="bi bi-calendar-event"></i> Due Date
+                </label>
+                <input type="date" name="due_date" id="due_date" class="form-control" 
+                       value="{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '' }}">
+            </div>
+            
+            <div class="col-md-6">
+                <label class="form-label" for="tags">
+                    <i class="bi bi-tag-fill"></i> Tags
+                </label>
+                <input type="text" name="tags" id="tags" class="form-control" 
+                       placeholder="e.g., urgent, meeting" value="{{ task.tags or '' }}">
+            </div>
+            
+            <div class="col-12">
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Save Changes
+                    </button>
+                    <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
 
-<form method="POST">
-
-<input name="task" class="form-control mb-2" value="{{task.task}}">
-
-<select name="category" class="form-select mb-2">
-<option {{'selected' if task.category=='Work'}}>Work</option>
-<option {{'selected' if task.category=='Personal'}}>Personal</option>
-<option {{'selected' if task.category=='Study'}}>Study</option>
-</select>
-
-<select name="priority" class="form-select mb-2">
-<option {{'selected' if task.priority=='Low'}}>Low</option>
-<option {{'selected' if task.priority=='Medium'}}>Medium</option>
-<option {{'selected' if task.priority=='High'}}>High</option>
-</select>
-
-<input type="date" name="due_date" class="form-control mb-2"
-value="{{task.due_date}}">
-
-<button class="btn btn-primary">Save</button>
-
-</form>
+<div class="chart-container" style="max-width: 800px; margin: 2rem auto 0;">
+    <div class="chart-header">
+        <h3 class="chart-title"><i class="bi bi-info-circle-fill"></i> Task Information</h3>
+    </div>
+    
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div style="padding: 1rem; background: var(--light-bg); border-radius: 8px;">
+                <small style="color: var(--text-secondary); font-weight: 600;">Status</small>
+                <div style="margin-top: 0.5rem;">
+                    <span class="task-badge {{ 'badge-due' if not task.completed else 'badge-category' }}">
+                        <i class="bi bi-{{ 'check-circle-fill' if task.completed else 'clock' }}"></i>
+                        {{ 'Completed' if task.completed else 'Pending' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div style="padding: 1rem; background: var(--light-bg); border-radius: 8px;">
+                <small style="color: var(--text-secondary); font-weight: 600;">Created</small>
+                <div style="margin-top: 0.5rem; font-weight: 600;">
+                    {{ task.created_at.strftime('%B %d, %Y') }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div style="padding: 1rem; background: var(--light-bg); border-radius: 8px;">
+                <small style="color: var(--text-secondary); font-weight: 600;">Task ID</small>
+                <div style="margin-top: 0.5rem; font-weight: 600;">
+                    #{{ task.id }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

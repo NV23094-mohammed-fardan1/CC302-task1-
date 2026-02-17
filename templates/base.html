@@ -1,37 +1,1037 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Task Manager</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-body{
-    background:#f5f6fa;
-}
-
-.task-card{
-    transition:0.3s;
-}
-
-.task-card:hover{
-    transform:scale(1.02);
-}
-
-.completed{
-    text-decoration:line-through;
-    opacity:0.6;
-}
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Task Manager Pro{% endblock %}</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --dark-bg: #0f172a;
+            --light-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 280px;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-lg);
+            padding: 2rem 0;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .sidebar-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin: 0.25rem 0 0;
+        }
+        
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(99, 102, 241, 0.1);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: var(--primary-color);
+            transition: all 0.2s;
+        }
+        
+        .theme-toggle:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: rotate(20deg);
+        }
+        
+        .live-clock {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: rgba(99, 102, 241, 0.05);
+            border-radius: 8px;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .sidebar-menu {
+            padding: 1.5rem 0;
+        }
+        
+        .sidebar-menu-item {
+            padding: 0.75rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-menu-item:hover {
+            background: var(--light-bg);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+        
+        .sidebar-menu-item.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .sidebar-menu-item i {
+            font-size: 1.25rem;
+            margin-right: 1rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .sidebar-stats {
+            padding: 1.5rem;
+            margin: 1rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 12px;
+            color: white;
+        }
+        
+        .sidebar-stats h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+        
+        .sidebar-stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+        
+        .sidebar-stat-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        
+        .content-wrapper {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(10px);
+        }
+        
+        .page-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--border-color);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .stat-card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .stat-primary { color: var(--primary-color); background: rgba(99, 102, 241, 0.1); }
+        .stat-success { color: var(--success-color); background: rgba(16, 185, 129, 0.1); }
+        .stat-danger { color: var(--danger-color); background: rgba(239, 68, 68, 0.1); }
+        .stat-warning { color: var(--warning-color); background: rgba(245, 158, 11, 0.1); }
+        .stat-info { color: var(--info-color); background: rgba(59, 130, 246, 0.1); }
+        
+        .task-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .task-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateX(4px);
+        }
+        
+        .task-card.completed {
+            opacity: 0.6;
+            background: var(--light-bg);
+        }
+        
+        .task-card-priority {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            border-radius: 12px 0 0 12px;
+        }
+        
+        .priority-high { background: var(--danger-color); }
+        .priority-medium { background: var(--warning-color); }
+        .priority-low { background: var(--success-color); }
+        
+        .task-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .task-card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .task-card.completed .task-card-title {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+        
+        .task-card-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .task-card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .task-badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge-category {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .badge-priority-high {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .badge-priority-medium {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .badge-priority-low {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+        
+        .badge-due {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info-color);
+        }
+        
+        .badge-overdue {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .task-card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #d97706;
+        }
+        
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .btn-secondary {
+            background: var(--text-secondary);
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8125rem;
+        }
+        
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+        
+        .form-control, .form-select {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            transition: all 0.2s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            outline: none;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .chart-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+        
+        .chart-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .chart-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .filters-container {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .filters-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .empty-state-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state-text {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--card-bg);
+            border: none;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            transition: all 0.2s;
+        }
+        
+        .mobile-menu-toggle:hover {
+            transform: scale(1.1);
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .overlay.show {
+            display: block;
+            opacity: 1;
+        }
+        
+        body[data-theme="dark"] {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+        
+        body[data-theme="dark"] .sidebar {
+            background: #1e293b;
+            border-right-color: #334155;
+        }
+        
+        body[data-theme="dark"] .content-wrapper {
+            background: rgba(30, 41, 59, 0.95);
+        }
+        
+        body[data-theme="dark"] .stat-card,
+        body[data-theme="dark"] .chart-container,
+        body[data-theme="dark"] .filters-container,
+        body[data-theme="dark"] .task-card {
+            background: #1e293b;
+            border-color: #334155;
+        }
+        
+        body[data-theme="dark"] .task-card.completed {
+            background: #0f172a;
+        }
+        
+        body[data-theme="dark"] .page-header {
+            border-bottom-color: #334155;
+        }
+        
+        body[data-theme="dark"] .sidebar-header {
+            border-bottom-color: #334155;
+        }
+        
+        body[data-theme="dark"] .sidebar-menu-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        body[data-theme="dark"] .form-control,
+        body[data-theme="dark"] .form-select {
+            background: #0f172a;
+            border-color: #334155;
+            color: #e2e8f0;
+        }
+        
+        body[data-theme="dark"] .form-control:focus,
+        body[data-theme="dark"] .form-select:focus {
+            background: #0f172a;
+            border-color: var(--primary-color);
+            color: #e2e8f0;
+        }
+        
+        body[data-theme="dark"] .live-clock {
+            background: rgba(99, 102, 241, 0.1);
+            color: #94a3b8;
+        }
+        
+        body[data-theme="dark"] .page-header h1,
+        body[data-theme="dark"] .chart-title,
+        body[data-theme="dark"] .task-card-title,
+        body[data-theme="dark"] .stat-card-value,
+        body[data-theme="dark"] .form-label,
+        body[data-theme="dark"] .empty-state-title {
+            color: #e2e8f0;
+        }
+        
+        body[data-theme="dark"] .page-header p,
+        body[data-theme="dark"] .task-card-description,
+        body[data-theme="dark"] .stat-card-label,
+        body[data-theme="dark"] .empty-state-text {
+            color: #94a3b8;
+        }
+        
+        @media (max-width: 992px) {
+            .mobile-menu-toggle {
+                display: flex;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--light-bg);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
 </head>
-
 <body>
+    <button class="mobile-menu-toggle" id="sidebarToggle">
+        <i class="bi bi-list"></i>
+    </button>
+    
+    <div class="overlay" id="overlay"></div>
+    
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3><i class="bi bi-check-circle-fill"></i> TaskMaster</h3>
+                    <p>Professional Task Management</p>
+                </div>
+                <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+                    <i class="bi bi-moon-stars-fill"></i>
+                </button>
+            </div>
+            <div class="live-clock" id="liveClock"></div>
+        </div>
+        
+        <div class="sidebar-menu">
+            <a href="{{ url_for('index') }}" class="sidebar-menu-item {{ 'active' if current_filters.status == 'all' else '' }}">
+                <i class="bi bi-grid-fill"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('index', status='pending') }}" class="sidebar-menu-item {{ 'active' if current_filters.status == 'pending' else '' }}">
+                <i class="bi bi-list-task"></i>
+                <span>Active Tasks</span>
+            </a>
+            <a href="{{ url_for('index', status='completed') }}" class="sidebar-menu-item {{ 'active' if current_filters.status == 'completed' else '' }}">
+                <i class="bi bi-check-circle"></i>
+                <span>Completed</span>
+            </a>
+            <a href="{{ url_for('index', status='overdue') }}" class="sidebar-menu-item {{ 'active' if current_filters.status == 'overdue' else '' }}">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span>Overdue</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-stats">
+            <h4>Quick Stats</h4>
+            <div class="sidebar-stat-item">
+                <span>Completion Rate</span>
+                <strong>{{ stats.completion_rate if stats else 0 }}%</strong>
+            </div>
+            <div class="sidebar-stat-item">
+                <span>Active Tasks</span>
+                <strong>{{ stats.pending if stats else 0 }}</strong>
+            </div>
+            <div class="sidebar-stat-item">
+                <span>This Week</span>
+                <strong>{{ stats.recent_completions if stats else 0 }}</strong>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div class="content-wrapper">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
 
-<div class="container mt-4">
-{% block content %}{% endblock %}
-</div>
+        function initializeApp() {
+            initializeSidebar();
+            initializeThemeToggle();
+            initializeTaskAnimations();
+            initializeNotifications();
+            initializeKeyboardShortcuts();
+            updateClock();
+        }
 
+        function initializeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('sidebarToggle');
+            const overlay = document.getElementById('overlay');
+            
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    sidebar.classList.toggle('show');
+                    overlay.classList.toggle('show');
+                });
+            }
+            
+            if (overlay) {
+                overlay.addEventListener('click', function() {
+                    sidebar.classList.remove('show');
+                    overlay.classList.remove('show');
+                });
+            }
+        }
+
+        function initializeThemeToggle() {
+            const themeToggle = document.getElementById('themeToggle');
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            
+            document.body.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+            
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function() {
+                    const currentTheme = document.body.getAttribute('data-theme');
+                    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                    
+                    document.body.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                    updateThemeIcon(newTheme);
+                    
+                    showNotification('Theme changed to ' + newTheme + ' mode', 'info', 2000);
+                });
+            }
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.querySelector('#themeToggle i');
+            if (icon) {
+                icon.className = theme === 'light' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
+            }
+        }
+
+        function initializeTaskAnimations() {
+            const taskCards = document.querySelectorAll('.task-card');
+            
+            taskCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+        }
+
+        function initializeNotifications() {
+            if (!document.getElementById('notificationContainer')) {
+                const container = document.createElement('div');
+                container.id = 'notificationContainer';
+                container.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;';
+                document.body.appendChild(container);
+            }
+        }
+
+        function showNotification(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            
+            const icons = {
+                success: 'check-circle-fill',
+                error: 'x-circle-fill',
+                warning: 'exclamation-triangle-fill',
+                info: 'info-circle-fill'
+            };
+            
+            const colors = {
+                success: '#10b981',
+                error: '#ef4444',
+                warning: '#f59e0b',
+                info: '#3b82f6'
+            };
+            
+            notification.style.cssText = `
+                background: white;
+                padding: 1rem 1.5rem;
+                border-radius: 12px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                min-width: 300px;
+                border-left: 4px solid ${colors[type]};
+                animation: slideInRight 0.3s ease;
+            `;
+            
+            notification.innerHTML = `
+                <i class="bi bi-${icons[type]}" style="font-size: 1.5rem; color: ${colors[type]};"></i>
+                <span style="flex: 1; font-weight: 500;">${message}</span>
+                <i class="bi bi-x" style="cursor: pointer; font-size: 1.25rem; color: #64748b;" onclick="this.parentElement.remove()"></i>
+            `;
+            
+            container.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, duration);
+        }
+
+        function initializeKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    const searchInput = document.querySelector('input[name="search"]');
+                    if (searchInput) {
+                        searchInput.focus();
+                        searchInput.select();
+                        showNotification('Search activated', 'info', 1500);
+                    }
+                }
+                
+                if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                    e.preventDefault();
+                    const taskInput = document.getElementById('task');
+                    if (taskInput) {
+                        taskInput.focus();
+                        taskInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        showNotification('New task input activated', 'info', 1500);
+                    }
+                }
+                
+                if (e.key === 'Escape') {
+                    const searchInput = document.querySelector('input[name="search"]');
+                    if (searchInput && searchInput.value) {
+                        searchInput.value = '';
+                        showNotification('Search cleared', 'info', 1500);
+                    }
+                }
+            });
+        }
+
+        function updateClock() {
+            const clockElement = document.getElementById('liveClock');
+            if (!clockElement) return;
+            
+            function update() {
+                const now = new Date();
+                const options = { 
+                    weekday: 'short', 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                };
+                clockElement.textContent = now.toLocaleDateString('en-US', options);
+            }
+            
+            update();
+            setInterval(update, 1000);
+        }
+
+        function exportTasks(format) {
+            const tasks = [];
+            const taskCards = document.querySelectorAll('.task-card');
+            
+            taskCards.forEach(card => {
+                const titleEl = card.querySelector('.task-card-title');
+                const descEl = card.querySelector('.task-card-description');
+                const categoryEl = card.querySelector('.badge-category');
+                const priorityEl = card.querySelector('[class*="badge-priority"]');
+                
+                const task = {
+                    title: titleEl ? titleEl.textContent.trim() : '',
+                    description: descEl ? descEl.textContent.trim() : '',
+                    category: categoryEl ? categoryEl.textContent.trim().replace(/.*\s/, '') : '',
+                    priority: priorityEl ? priorityEl.textContent.trim().replace(/.*\s/, '') : '',
+                    completed: card.classList.contains('completed')
+                };
+                tasks.push(task);
+            });
+            
+            if (format === 'json') {
+                const blob = new Blob([JSON.stringify(tasks, null, 2)], { type: 'application/json' });
+                downloadBlob(blob, 'tasks.json');
+            } else if (format === 'csv') {
+                if (tasks.length > 0) {
+                    const headers = Object.keys(tasks[0]);
+                    const csv = [
+                        headers.join(','),
+                        ...tasks.map(row => headers.map(h => `"${row[h]}"`).join(','))
+                    ].join('\n');
+                    const blob = new Blob([csv], { type: 'text/csv' });
+                    downloadBlob(blob, 'tasks.csv');
+                }
+            }
+            
+            showNotification(`Exported ${tasks.length} tasks as ${format.toUpperCase()}`, 'success');
+        }
+
+        function downloadBlob(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showKeyboardShortcutsModal() {
+            const modal = new bootstrap.Modal(document.getElementById('keyboardShortcutsModal'));
+            modal.show();
+        }
+
+        function animateStatNumbers() {
+            const statValues = document.querySelectorAll('.stat-card-value');
+            
+            statValues.forEach(stat => {
+                const target = parseInt(stat.textContent);
+                if (isNaN(target)) return;
+                
+                let current = 0;
+                const increment = target / 50;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        stat.textContent = target;
+                        clearInterval(timer);
+                    } else {
+                        stat.textContent = Math.floor(current);
+                    }
+                }, 20);
+            });
+        }
+
+        window.addEventListener('load', function() {
+            animateStatNumbers();
+            showNotification('Dashboard loaded', 'success', 2000);
+        });
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(400px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(400px); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        console.log('%c🎯 TaskMaster Pro', 'font-size: 24px; font-weight: bold; color: #6366f1;');
+        console.log('%cKeyboard Shortcuts:', 'font-size: 14px; font-weight: bold;');
+        console.log('Ctrl+K - Search tasks');
+        console.log('Ctrl+N - New task');
+        console.log('ESC - Clear filters');
+    </script>
+    
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
