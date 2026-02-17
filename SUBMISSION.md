@@ -41,9 +41,7 @@ Run: `git fetch --all && git branch -a`
 
 Please paste the 3 feature PR URLs here. Example placeholders:
 
-- Feature 1 (task descriptions): <PASTE PR URL HERE>
-- Feature 2 (search): <PASTE PR URL HERE>
-- Feature 3 (filters & sorting): <PASTE PR URL HERE>
+
  - Feature 1 (task descriptions): https://github.com/NV23094-mohammed-fardan1/CC302-task1-/compare/dev...Features/Backend?expand=1
  - Feature 2 (search): https://github.com/NV23094-mohammed-fardan1/CC302-task1-/compare/dev...Features/Frontend?expand=1
  - Feature 3 (filters & sorting): https://github.com/NV23094-mohammed-fardan1/CC302-task1-/compare/dev...Features/Docker?expand=1
