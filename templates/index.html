@@ -23,79 +23,7 @@
     </div>
 </div>
 
-<div class="stats-grid">
-    <div class="stat-card">
-        <div class="stat-card-header">
-            <div>
-                <div class="stat-card-title">Total Tasks</div>
-            </div>
-            <div class="stat-card-icon stat-primary">
-                <i class="bi bi-list-task"></i>
-            </div>
-        </div>
-        <div class="stat-card-value">{{ stats.total }}</div>
-        <div class="stat-card-label">All time tasks</div>
-    </div>
-    
-    <div class="stat-card">
-        <div class="stat-card-header">
-            <div>
-                <div class="stat-card-title">Completed</div>
-            </div>
-            <div class="stat-card-icon stat-success">
-                <i class="bi bi-check-circle-fill"></i>
-            </div>
-        </div>
-        <div class="stat-card-value">{{ stats.completed }}</div>
-        <div class="stat-card-label">{{ stats.completion_rate }}% completion rate</div>
-    </div>
-    
-    <div class="stat-card">
-        <div class="stat-card-header">
-            <div>
-                <div class="stat-card-title">Pending</div>
-            </div>
-            <div class="stat-card-icon stat-warning">
-                <i class="bi bi-clock-fill"></i>
-            </div>
-        </div>
-        <div class="stat-card-value">{{ stats.pending }}</div>
-        <div class="stat-card-label">Tasks in progress</div>
-    </div>
-    
-    <div class="stat-card">
-        <div class="stat-card-header">
-            <div>
-                <div class="stat-card-title">Overdue</div>
-            </div>
-            <div class="stat-card-icon stat-danger">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-            </div>
-        </div>
-        <div class="stat-card-value">{{ stats.overdue }}</div>
-        <div class="stat-card-label">Need attention</div>
-    </div>
-</div>
-
-<div class="row mb-4">
-    <div class="col-md-6 mb-3">
-        <div class="chart-container">
-            <div class="chart-header">
-                <h3 class="chart-title"><i class="bi bi-bar-chart-fill"></i> Priority Distribution</h3>
-            </div>
-            <canvas id="priorityChart" height="200"></canvas>
-        </div>
-    </div>
-    
-    <div class="col-md-6 mb-3">
-        <div class="chart-container">
-            <div class="chart-header">
-                <h3 class="chart-title"><i class="bi bi-graph-up"></i> Productivity (Last 7 Days)</h3>
-            </div>
-            <canvas id="productivityChart" height="200"></canvas>
-        </div>
-    </div>
-</div>
+<!-- Dashboard (moved to bottom) -->
 
 <div class="chart-container mb-4">
     <div class="chart-header">
@@ -313,6 +241,81 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dashboard (moved here) -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-card-header">
+            <div>
+                <div class="stat-card-title">Total Tasks</div>
+            </div>
+            <div class="stat-card-icon stat-primary">
+                <i class="bi bi-list-task"></i>
+            </div>
+        </div>
+        <div class="stat-card-value">{{ stats.total }}</div>
+        <div class="stat-card-label">All time tasks</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-card-header">
+            <div>
+                <div class="stat-card-title">Completed</div>
+            </div>
+            <div class="stat-card-icon stat-success">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+        </div>
+        <div class="stat-card-value">{{ stats.completed }}</div>
+        <div class="stat-card-label">{{ stats.completion_rate }}% completion rate</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-card-header">
+            <div>
+                <div class="stat-card-title">Pending</div>
+            </div>
+            <div class="stat-card-icon stat-warning">
+                <i class="bi bi-clock-fill"></i>
+            </div>
+        </div>
+        <div class="stat-card-value">{{ stats.pending }}</div>
+        <div class="stat-card-label">Tasks in progress</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-card-header">
+            <div>
+                <div class="stat-card-title">Overdue</div>
+            </div>
+            <div class="stat-card-icon stat-danger">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+        </div>
+        <div class="stat-card-value">{{ stats.overdue }}</div>
+        <div class="stat-card-label">Need attention</div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6 mb-3">
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3 class="chart-title"><i class="bi bi-bar-chart-fill"></i> Priority Distribution</h3>
+            </div>
+            <canvas id="priorityChart" height="200"></canvas>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-3">
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3 class="chart-title"><i class="bi bi-graph-up"></i> Productivity (Last 7 Days)</h3>
+            </div>
+            <canvas id="productivityChart" height="200"></canvas>
         </div>
     </div>
 </div>
