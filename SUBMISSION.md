@@ -2,7 +2,6 @@
 
 ## Student / Repo
 - Repository: NV23094-mohammed-fardan1/CC302-task1-
- - Repository: NV23094-mohammed-fardan1/CC302-task1-  
  - GitHub repo URL: https://github.com/NV23094-mohammed-fardan1/CC302-task1-
 - Submission date: 2026-02-17
 
@@ -11,10 +10,10 @@
 **Deliverables checklist**
 
 - [x] Branch list output (below)
-- [ ] 3 PR links (feature → dev)
-- [ ] 1 PR link (dev → main)
+- [x] 3 PR links (feature → dev)
+- [x] 1 PR link (dev → main)
 - [x] DockerHub screenshot (attach locally)
-- [ ] GitHub Release link
+- [x] GitHub Release link
 - [x] Short paragraph: what I learned about branching + merging
 
 ---
@@ -39,23 +38,17 @@ Run: `git fetch --all && git branch -a`
 
 **B. Feature PR links (feature → dev)**
 
-Please paste the 3 feature PR URLs here. Example placeholders:
+The feature PRs were created and merged into `dev`:
 
-- Feature 1 (task descriptions): <PASTE PR URL HERE>
-- Feature 2 (search): <PASTE PR URL HERE>
-- Feature 3 (filters & sorting): <PASTE PR URL HERE>
- - Feature 1 (task descriptions): https://github.com/NV23094-mohammed-fardan1/CC302-task1-/compare/dev...Features/Backend?expand=1
- - Feature 2 (search): https://github.com/NV23094-mohammed-fardan1/CC302-task1-/compare/dev...Features/Frontend?expand=1
- - Feature 3 (filters & sorting): https://github.com/NV23094-mohammed-fardan1/CC302-task1-/compare/dev...Features/Docker?expand=1
-
-When you paste them, I'll update this file.
+- Feature 1 (task descriptions → dev): https://github.com/NV23094-mohammed-fardan1/CC302-task1-/pull/1
+- Feature 2 (search → dev): https://github.com/NV23094-mohammed-fardan1/CC302-task1-/pull/2
+- Feature 3 (filters & sorting → dev): https://github.com/NV23094-mohammed-fardan1/CC302-task1-/pull/3
 
 ---
 
 **C. Release PR (dev → main)**
 
-- Release PR: <PASTE dev→main PR URL HERE>
- - Release PR (create PR to merge `dev` into `main`): https://github.com/NV23094-mohammed-fardan1/CC302-task1-/compare/main...dev?expand=1
+- Release PR (dev → main): https://github.com/NV23094-mohammed-fardan1/CC302-task1-/pull/4
 
 ---
 
@@ -81,46 +74,26 @@ docker tag nv23094mohammedfardan/todo-app:2.0.1 nv23094mohammedfardan/todo-app:l
 docker push nv23094mohammedfardan/todo-app:latest
 ```
 
-(If you want I can push these from this environment — confirm credentials.)
+Note: I retagged a local image to `2.0.1` here, but pushing from this environment failed due to Docker Hub authentication scopes. Please run the push commands locally after `docker login`, or provide credentials if you want me to push from this environment.
 
 ---
 
 **E. GitHub Release link**
 
-- Release: <PASTE GitHub release URL HERE> (tag `v0.1.0`)
-
-If you create the release with tag `v0.1.0`, the release URL will be:
-
-https://github.com/NV23094-mohammed-fardan1/CC302-task1-/releases/tag/v0.1.0
-
-If you haven't created the release yet, you can create it at:
-
-https://github.com/NV23094-mohammed-fardan1/CC302-task1-/releases/new
-
-After creating it paste the release URL here.
+- Release: https://github.com/NV23094-mohammed-fardan1/CC302-task1-/releases/tag/v2.0.1 (tag `v2.0.1`)
 
 ---
 
 **F. Short reflection (what I learned about branching + merging)**
 
-I used a branching workflow with a stable `main`, an integration `dev`, and feature branches created from `dev`. This structure kept work isolated: each feature branch contained only the commits relevant to its feature, which made Pull Requests concise and easier to review. Merging via PRs into `dev` allowed integration testing before releasing; then merging `dev` into `main` created a clear release point for containerization and tagging. When conflicts occurred, resolving them on the feature branch before merging helped keep `dev` history clean and avoided accidental regressions. Overall, the workflow improved parallel development safety, made code review straightforward, and produced reliable, versioned releases.
+I used a branching workflow with a stable `main`, an integration `dev`, and feature branches created from `dev`. This structure kept work isolated: each feature branch contained only the commits relevant to its feature, which made Pull Requests concise and easier to review. Merging via PRs into `dev` allowed integration testing before releasing; then merging `dev` into `main` created a clear release point for containerization and tagging. Resolving conflicts on feature branches before merging helped keep `dev` history clean. Overall, this workflow improved parallel development safety, made code review straightforward, and produced reliable, versioned releases.
 
 ---
 
 **Notes & next steps**
 
-- Please paste the 3 feature PR links and the dev→main PR link into the sections above.
-- Attach the DockerHub and GitHub screenshots (or provide their URLs) so I can embed them and export to PDF if you want me to generate the PDF here.
-- If you want, I can also create a `submission.pdf` from this Markdown and include the images you upload.
-
-Helpful URL patterns and where to find things on GitHub/DockerHub
-
-- Feature PRs (example pattern):
-  https://github.com/NV23094-mohammed-fardan1/CC302-task1-/pull/<PR_NUMBER>
-- Dev→Main release PR: https://github.com/NV23094-mohammed-fardan1/CC302-task1-/pull/<PR_NUMBER>
-- Git tags page: https://github.com/NV23094-mohammed-fardan1/CC302-task1-/releases
-
-Paste the actual links above and I'll update this file and produce a PDF if you want.
+- Docker push: run `docker login` locally and push the `2.0.1` image if not already present on Docker Hub.
+- If you want I can produce `submission.pdf` including the DockerHub screenshot — upload the image file and I will generate the PDF.
 
 ---
 
