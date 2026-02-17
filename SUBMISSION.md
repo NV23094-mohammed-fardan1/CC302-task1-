@@ -44,6 +44,9 @@ Please paste the 3 feature PR URLs here. Example placeholders:
 - Feature 1 (task descriptions): <PASTE PR URL HERE>
 - Feature 2 (search): <PASTE PR URL HERE>
 - Feature 3 (filters & sorting): <PASTE PR URL HERE>
+ - Feature 1 (task descriptions): https://github.com/NV23094-mohammed-fardan1/CC302-task1-/compare/dev...Features/Backend?expand=1
+ - Feature 2 (search): https://github.com/NV23094-mohammed-fardan1/CC302-task1-/compare/dev...Features/Frontend?expand=1
+ - Feature 3 (filters & sorting): https://github.com/NV23094-mohammed-fardan1/CC302-task1-/compare/dev...Features/Docker?expand=1
 
 When you paste them, I'll update this file.
 
@@ -52,6 +55,7 @@ When you paste them, I'll update this file.
 **C. Release PR (dev → main)**
 
 - Release PR: <PASTE dev→main PR URL HERE>
+ - Release PR (create PR to merge `dev` into `main`): https://github.com/NV23094-mohammed-fardan1/CC302-task1-/compare/main...dev?expand=1
 
 ---
 
@@ -84,6 +88,10 @@ docker push nv23094mohammedfardan/todo-app:latest
 **E. GitHub Release link**
 
 - Release: <PASTE GitHub release URL HERE> (tag `v0.1.0`)
+
+If you create the release with tag `v0.1.0`, the release URL will be:
+
+https://github.com/NV23094-mohammed-fardan1/CC302-task1-/releases/tag/v0.1.0
 
 If you haven't created the release yet, you can create it at:
 
