@@ -2,6 +2,8 @@
 
 ## Student / Repo
 - Repository: NV23094-mohammed-fardan1/CC302-task1-
+ - Repository: NV23094-mohammed-fardan1/CC302-task1-  
+ - GitHub repo URL: https://github.com/NV23094-mohammed-fardan1/CC302-task1-
 - Submission date: 2026-02-17
 
 ---
@@ -57,6 +59,10 @@ When you paste them, I'll update this file.
 
 I have attached or referenced your DockerHub screenshot showing tags (e.g., `latest`, `2.0.1`, `v1.2.0`, `v1.1.2`). Replace/attach the image file `dockerhub-tags.png` next to this Markdown when producing the final PDF.
 
+DockerHub repo URL (from your screenshot): https://hub.docker.com/repository/docker/nv23094mohammedfardan/todo-app/general
+
+If you prefer a tags-only view use: https://hub.docker.com/r/nv23094mohammedfardan/todo-app/tags
+
 Suggested Docker commands used:
 
 ```bash
@@ -79,6 +85,12 @@ docker push nv23094mohammedfardan/todo-app:latest
 
 - Release: <PASTE GitHub release URL HERE> (tag `v0.1.0`)
 
+If you haven't created the release yet, you can create it at:
+
+https://github.com/NV23094-mohammed-fardan1/CC302-task1-/releases/new
+
+After creating it paste the release URL here.
+
 ---
 
 **F. Short reflection (what I learned about branching + merging)**
@@ -92,6 +104,15 @@ I used a branching workflow with a stable `main`, an integration `dev`, and feat
 - Please paste the 3 feature PR links and the dev→main PR link into the sections above.
 - Attach the DockerHub and GitHub screenshots (or provide their URLs) so I can embed them and export to PDF if you want me to generate the PDF here.
 - If you want, I can also create a `submission.pdf` from this Markdown and include the images you upload.
+
+Helpful URL patterns and where to find things on GitHub/DockerHub
+
+- Feature PRs (example pattern):
+  https://github.com/NV23094-mohammed-fardan1/CC302-task1-/pull/<PR_NUMBER>
+- Dev→Main release PR: https://github.com/NV23094-mohammed-fardan1/CC302-task1-/pull/<PR_NUMBER>
+- Git tags page: https://github.com/NV23094-mohammed-fardan1/CC302-task1-/releases
+
+Paste the actual links above and I'll update this file and produce a PDF if you want.
 
 ---
 
