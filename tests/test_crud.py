@@ -24,7 +24,7 @@ def test_create_task(client):
     }, follow_redirects=True)
 
     # ASSERT — status and content
-    assert resp.status_code == 999
+    assert resp.status_code == 200
     assert b"Buy milk" in resp.data
 
 
