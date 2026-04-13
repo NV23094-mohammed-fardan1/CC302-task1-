@@ -110,6 +110,16 @@
                     <option value="Low" {{ 'selected' if current_filters.priority == 'Low' }}>Low</option>
                 </select>
             </div>
+
+            <div>
+                <label class="form-label">Tag</label>
+                <select name="tag" class="form-select">
+                    <option value="all" {{ 'selected' if current_filters.tag == 'all' }}>All Tags</option>
+                    {% for tag in distinct_tags %}
+                    <option value="{{ tag }}" {{ 'selected' if current_filters.tag == tag }}>{{ tag }}</option>
+                    {% endfor %}
+                </select>
+            </div>
             
             <div>
                 <label class="form-label">Status</label>

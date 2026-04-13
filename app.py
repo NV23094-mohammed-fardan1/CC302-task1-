@@ -29,6 +29,19 @@ with app.app_context():
     db.create_all()
 
 
+@app.context_processor
+def inject_current_filters():
+    return {
+        'current_filters': {
+            'category': 'all',
+            'priority': 'all',
+            'status': 'all',
+            'tag': 'all',
+            'search': ''
+        }
+    }
+
+
 # ------------------ HELPER FUNCTIONS ------------------
 def get_task_stats():
     todos = Todo.query.all()
@@ -60,13 +73,13 @@ def get_task_stats():
     category_stats = db.session.query(
         Todo.category,
         func.count(Todo.id)
-    ).filter(Todo.completed is False).group_by(Todo.category).all()
+    ).filter(Todo.completed.is_(False)).group_by(Todo.category).all()
 
     completion_rate = int((completed / total) * 100) if total > 0 else 0
 
     week_ago = datetime.utcnow() - timedelta(days=7)
     recent_completions = Todo.query.filter(
-        Todo.completed is True,
+        Todo.completed.is_(True),
         Todo.completed_at >= week_ago
     ).count()
 
@@ -96,7 +109,7 @@ def get_productivity_data():
         day_end = datetime.combine(day, datetime.max.time())
 
         count = Todo.query.filter(
-            Todo.completed is True,
+            Todo.completed.is_(True),
             Todo.completed_at >= day_start,
             Todo.completed_at <= day_end
         ).count()
@@ -114,6 +127,7 @@ def index():
     filter_category = request.args.get('category', 'all')
     filter_priority = request.args.get('priority', 'all')
     filter_status = request.args.get('status', 'all')
+    filter_tag = request.args.get('tag', 'all')
     search_query = request.args.get('search', '')
 
     query = Todo.query
@@ -124,13 +138,16 @@ def index():
     if filter_priority != 'all':
         query = query.filter_by(priority=filter_priority)
 
+    if filter_tag != 'all':
+        query = query.filter(Todo.tags.contains(filter_tag))
+
     if filter_status == 'completed':
-        query = query.filter_by(completed=True)
+        query = query.filter(Todo.completed.is_(True))
     elif filter_status == 'pending':
-        query = query.filter_by(completed=False)
+        query = query.filter(Todo.completed.is_(False))
     elif filter_status == 'overdue':
         query = query.filter(
-            Todo.completed is False,
+            Todo.completed.is_(False),
             Todo.due_date < date.today()
         )
 
@@ -147,16 +164,26 @@ def index():
     categories = db.session.query(Todo.category).distinct().all()
     categories = [c[0] for c in categories]
 
+    distinct_tags = set()
+    for task in Todo.query.filter(Todo.tags.isnot(None)).all():
+        for raw_tag in (task.tags or '').split(','):
+            tag = raw_tag.strip()
+            if tag:
+                distinct_tags.add(tag)
+    distinct_tags = sorted(distinct_tags)
+
     return render_template(
         "index.html",
         todos=todos,
         stats=stats,
         productivity=productivity,
         categories=categories,
+        distinct_tags=distinct_tags,
         current_filters={
             'category': filter_category,
             'priority': filter_priority,
             'status': filter_status,
+            'tag': filter_tag,
             'search': search_query
         },
         datetime=datetime
