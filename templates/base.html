@@ -710,18 +710,7 @@
                 <i class="bi bi-grid-fill"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="{{ url_for('index', status='pending') }}" class="sidebar-menu-item {{ 'active' if current_filters.status == 'pending' else '' }}">
-                <i class="bi bi-list-task"></i>
-                <span>Active Tasks</span>
-            </a>
-            <a href="{{ url_for('index', status='completed') }}" class="sidebar-menu-item {{ 'active' if current_filters.status == 'completed' else '' }}">
-                <i class="bi bi-check-circle"></i>
-                <span>Completed</span>
-            </a>
-            <a href="{{ url_for('index', status='overdue') }}" class="sidebar-menu-item {{ 'active' if current_filters.status == 'overdue' else '' }}">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-                <span>Overdue</span>
-            </a>
+              
         </div>
         
         <div class="sidebar-stats">
