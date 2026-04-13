@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, date, timedelta
-from sqlalchemy import func, or_
+from sqlalchemy import case, func, or_
 
 app = Flask(__name__)
 
@@ -27,6 +27,18 @@ class Todo(db.Model):
 
 with app.app_context():
     db.create_all()
+
+
+@app.context_processor
+def inject_current_filters():
+    return {
+        'current_filters': {
+            'category': 'all',
+            'priority': 'all',
+            'status': 'all',
+            'q': ''
+        }
+    }
 
 
 # ------------------ HELPER FUNCTIONS ------------------
@@ -60,13 +72,13 @@ def get_task_stats():
     category_stats = db.session.query(
         Todo.category,
         func.count(Todo.id)
-    ).filter(Todo.completed is False).group_by(Todo.category).all()
+    ).filter(Todo.completed.is_(False)).group_by(Todo.category).all()
 
     completion_rate = int((completed / total) * 100) if total > 0 else 0
 
     week_ago = datetime.utcnow() - timedelta(days=7)
     recent_completions = Todo.query.filter(
-        Todo.completed is True,
+        Todo.completed.is_(True),
         Todo.completed_at >= week_ago
     ).count()
 
@@ -114,7 +126,10 @@ def index():
     filter_category = request.args.get('category', 'all')
     filter_priority = request.args.get('priority', 'all')
     filter_status = request.args.get('status', 'all')
-    search_query = request.args.get('search', '')
+    search_query = request.args.get('q', '')
+    due_from = request.args.get('due_from', '')
+    due_to = request.args.get('due_to', '')
+    sort_by = request.args.get('sort_by', 'due_date')
 
     query = Todo.query
 
@@ -125,14 +140,28 @@ def index():
         query = query.filter_by(priority=filter_priority)
 
     if filter_status == 'completed':
-        query = query.filter_by(completed=True)
+        query = query.filter(Todo.completed.is_(True))
     elif filter_status == 'pending':
-        query = query.filter_by(completed=False)
+        query = query.filter(Todo.completed.is_(False))
     elif filter_status == 'overdue':
         query = query.filter(
-            Todo.completed is False,
+            Todo.completed.is_(False),
             Todo.due_date < date.today()
         )
+
+    if due_from:
+        try:
+            due_from_date = datetime.strptime(due_from, '%Y-%m-%d').date()
+            query = query.filter(Todo.due_date >= due_from_date)
+        except ValueError:
+            pass
+
+    if due_to:
+        try:
+            due_to_date = datetime.strptime(due_to, '%Y-%m-%d').date()
+            query = query.filter(Todo.due_date <= due_to_date)
+        except ValueError:
+            pass
 
     if search_query:
         query = query.filter(
@@ -143,8 +172,16 @@ def index():
         )
 
     priority_order = {'High': 1, 'Medium': 2, 'Low': 3}
-    todos = query.order_by(Todo.completed, Todo.due_date).all()
-    todos.sort(key=lambda x: (x.completed, priority_order.get(x.priority, 4), x.due_date or date.max))
+    todos = query.all()
+
+    if sort_by == 'created_at':
+        todos.sort(key=lambda x: x.created_at or datetime.min, reverse=True)
+    elif sort_by == 'priority':
+        todos.sort(key=lambda x: (priority_order.get(x.priority, 4), x.due_date or date.max))
+    elif sort_by == 'alphabetical':
+        todos.sort(key=lambda x: x.task.lower())
+    else:
+        todos.sort(key=lambda x: (x.due_date is None, x.due_date or date.max, priority_order.get(x.priority, 4)))
 
     stats = get_task_stats()
     productivity = get_productivity_data()
@@ -162,52 +199,15 @@ def index():
             'category': filter_category,
             'priority': filter_priority,
             'status': filter_status,
-            'search': search_query
+            'q': search_query,
+            'due_from': due_from,
+            'due_to': due_to,
+            'sort_by': sort_by
         },
         datetime=datetime
     )
 
 
-
-@app.route("/api/tasks")
-def api_tasks():
-    q = request.args.get('q', '')
-    page = int(request.args.get('page', 1))
-    per_page = int(request.args.get('per_page', 10))
-
-    query = Todo.query
-    if q:
-        query = query.filter(
-            or_(
-                Todo.task.ilike(f"%{q}%"),
-                Todo.description.ilike(f"%{q}%")
-            )
-        )
-
-    pagination = query.order_by(Todo.created_at.desc()).paginate(page=page, per_page=per_page, error_out=False)
-    tasks = [
-        {
-            'id': item.id,
-            'task': item.task,
-            'description': item.description,
-            'completed': item.completed,
-            'category': item.category,
-            'priority': item.priority,
-            'due_date': item.due_date.isoformat() if item.due_date else None,
-            'created_at': item.created_at.isoformat(),
-            'tags': item.tags
-        }
-        for item in pagination.items
-    ]
-
-    return jsonify({
-        'tasks': tasks,
-        'page': pagination.page,
-        'per_page': pagination.per_page,
-        'total': pagination.total,
-        'pages': pagination.pages,
-        'query': q
-    })
 
 @app.route("/add", methods=["POST"])
 def add():
@@ -269,7 +269,74 @@ def edit(id):
         db.session.commit()
         return redirect(url_for('index'))
 
-    return render_template("edit.html", task=task, stats=get_task_stats())
+    return render_template("edit.html", task=task, stats=get_task_stats(), current_filters={'category': 'all', 'priority': 'all', 'status': 'all', 'q': ''})
+
+
+@app.route("/api/tasks")
+def api_tasks():
+    search_query = request.args.get('q', '')
+    filter_category = request.args.get('category', 'all')
+    filter_priority = request.args.get('priority', 'all')
+    filter_status = request.args.get('status', 'all')
+    sort_by = request.args.get('sort_by', 'due_date')
+    page = int(request.args.get('page', 1))
+    page_size = min(int(request.args.get('page_size', 10)), 50)
+
+    query = Todo.query
+    if filter_category != 'all':
+        query = query.filter_by(category=filter_category)
+    if filter_priority != 'all':
+        query = query.filter_by(priority=filter_priority)
+    if filter_status == 'completed':
+        query = query.filter(Todo.completed.is_(True))
+    elif filter_status == 'pending':
+        query = query.filter(Todo.completed.is_(False))
+    elif filter_status == 'overdue':
+        query = query.filter(Todo.completed.is_(False), Todo.due_date < date.today())
+
+    if search_query:
+        query = query.filter(or_(Todo.task.contains(search_query), Todo.description.contains(search_query)))
+
+    total = query.count()
+
+    if sort_by == 'created_at':
+        query = query.order_by(Todo.created_at.desc())
+    elif sort_by == 'priority':
+        query = query.order_by(
+            case(
+                (Todo.priority == 'High', 1),
+                (Todo.priority == 'Medium', 2),
+                (Todo.priority == 'Low', 3),
+                else_=4
+            ),
+            Todo.due_date
+        )
+    elif sort_by == 'alphabetical':
+        query = query.order_by(Todo.task)
+    else:
+        query = query.order_by(Todo.due_date, Todo.created_at)
+
+    tasks = query.offset((page - 1) * page_size).limit(page_size).all()
+    return jsonify({
+        'total': total,
+        'page': page,
+        'page_size': page_size,
+        'tasks': [
+            {
+                'id': task.id,
+                'task': task.task,
+                'description': task.description,
+                'completed': task.completed,
+                'category': task.category,
+                'priority': task.priority,
+                'due_date': task.due_date.isoformat() if task.due_date else None,
+                'created_at': task.created_at.isoformat() if task.created_at else None,
+                'completed_at': task.completed_at.isoformat() if task.completed_at else None,
+                'tags': task.tags
+            }
+            for task in tasks
+        ]
+    })
 
 
 @app.route("/api/stats")
