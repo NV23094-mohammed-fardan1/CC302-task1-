@@ -209,46 +209,6 @@ def index():
 
 
 
-@app.route("/api/tasks")
-def api_tasks():
-    q = request.args.get('q', '')
-    page = int(request.args.get('page', 1))
-    per_page = int(request.args.get('per_page', 10))
-
-    query = Todo.query
-    if q:
-        query = query.filter(
-            or_(
-                Todo.task.ilike(f"%{q}%"),
-                Todo.description.ilike(f"%{q}%")
-            )
-        )
-
-    pagination = query.order_by(Todo.created_at.desc()).paginate(page=page, per_page=per_page, error_out=False)
-    tasks = [
-        {
-            'id': item.id,
-            'task': item.task,
-            'description': item.description,
-            'completed': item.completed,
-            'category': item.category,
-            'priority': item.priority,
-            'due_date': item.due_date.isoformat() if item.due_date else None,
-            'created_at': item.created_at.isoformat(),
-            'tags': item.tags
-        }
-        for item in pagination.items
-    ]
-
-    return jsonify({
-        'tasks': tasks,
-        'page': pagination.page,
-        'per_page': pagination.per_page,
-        'total': pagination.total,
-        'pages': pagination.pages,
-        'query': q
-    })
-
 @app.route("/add", methods=["POST"])
 def add():
     task = request.form.get("task")
