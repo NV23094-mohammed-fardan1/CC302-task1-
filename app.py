@@ -46,6 +46,7 @@ def inject_current_filters():
 
 
 # ------------------ HELPER FUNCTIONS ------------------
+# Feature: Task Stats Dashboard
 def get_task_stats():
     todos = Todo.query.all()
 
