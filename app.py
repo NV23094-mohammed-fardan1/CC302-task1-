@@ -170,7 +170,7 @@ def index():
             query = query.filter(Todo.due_date <= due_to_date)
         except ValueError:
             pass
-
+    # Feature: Search Tasks
     if search_query:
         query = query.filter(
             or_(
