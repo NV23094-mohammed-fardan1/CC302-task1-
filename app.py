@@ -12,6 +12,8 @@ db = SQLAlchemy(app)
 
 
 # ------------------ MODEL ------------------
+# Feature: Task Descriptions & Metadata
+# Fields: description, priority, due_date, tags, created_at, completed_at
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     task = db.Column(db.String(200), nullable=False)
