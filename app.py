@@ -46,6 +46,7 @@ def inject_current_filters():
 
 
 # ------------------ HELPER FUNCTIONS ------------------
+# Feature: Task Stats Dashboard
 def get_task_stats():
     todos = Todo.query.all()
 
@@ -170,7 +171,7 @@ def index():
             query = query.filter(Todo.due_date <= due_to_date)
         except ValueError:
             pass
-
+    # Feature: Search Tasks
     if search_query:
         query = query.filter(
             or_(
