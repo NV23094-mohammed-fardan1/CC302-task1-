@@ -36,7 +36,9 @@ def inject_current_filters():
             'category': 'all',
             'priority': 'all',
             'status': 'all',
-            'q': ''
+            'tag': 'all',
+            'q': '',
+            'search': ''
         }
     }
 
@@ -108,7 +110,7 @@ def get_productivity_data():
         day_end = datetime.combine(day, datetime.max.time())
 
         count = Todo.query.filter(
-            Todo.completed is True,
+            Todo.completed.is_(True),
             Todo.completed_at >= day_start,
             Todo.completed_at <= day_end
         ).count()
@@ -126,7 +128,8 @@ def index():
     filter_category = request.args.get('category', 'all')
     filter_priority = request.args.get('priority', 'all')
     filter_status = request.args.get('status', 'all')
-    search_query = request.args.get('q', '')
+    filter_tag = request.args.get('tag', 'all')
+    search_query = request.args.get('q', request.args.get('search', ''))
     due_from = request.args.get('due_from', '')
     due_to = request.args.get('due_to', '')
     sort_by = request.args.get('sort_by', 'due_date')
@@ -138,6 +141,9 @@ def index():
 
     if filter_priority != 'all':
         query = query.filter_by(priority=filter_priority)
+
+    if filter_tag != 'all':
+        query = query.filter(Todo.tags.contains(filter_tag))
 
     if filter_status == 'completed':
         query = query.filter(Todo.completed.is_(True))
@@ -189,33 +195,31 @@ def index():
     categories = db.session.query(Todo.category).distinct().all()
     categories = [c[0] for c in categories]
 
+    distinct_tags = set()
+    for task in Todo.query.filter(Todo.tags.isnot(None)).all():
+        for raw_tag in (task.tags or '').split(','):
+            tag = raw_tag.strip()
+            if tag:
+                distinct_tags.add(tag)
+    distinct_tags = sorted(distinct_tags)
+
     return render_template(
         "index.html",
         todos=todos,
         stats=stats,
         productivity=productivity,
         categories=categories,
+        distinct_tags=distinct_tags,
         current_filters={
             'category': filter_category,
             'priority': filter_priority,
             'status': filter_status,
+            'tag': filter_tag,
             'q': search_query,
+            'search': search_query,
             'due_from': due_from,
             'due_to': due_to,
             'sort_by': sort_by
-        },
-        datetime=datetime
-    )
-
-
-
-@app.route("/api/tasks")
-def api_tasks():
-    q = request.args.get('q', '')
-    page = int(request.args.get('page', 1))
-    per_page = int(request.args.get('per_page', 10))
-
-    query = Todo.query
     if q:
         query = query.filter(
             or_(
